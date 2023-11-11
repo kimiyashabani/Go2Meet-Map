@@ -49,7 +49,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/*
+This class is the first one that the user will see, so this activity should start the task of
+downloading the data by the LoadingThread class. In the onCreate there should be a call to the
+class so the thread starts in the background. Then a listener should be established and, when the
+thread finishes, a function in this file should execute, reading all the dataset and printing all
+the necessary pins in the map
+*/
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
