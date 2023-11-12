@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
@@ -13,7 +14,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -58,9 +61,7 @@ public class MapsActivity extends FragmentActivity
     private ActivityMapsBinding binding;
     private RadioGroup radioGroup = findViewById(R.id.radioGroup);
     private RadioButton normalMap = findViewById(R.id.normal_map);
-    private RadioButton satelliteMap = findViewById(R.id.satellite_map);
     private RadioButton hybridMap = findViewById(R.id.hybrid_map);
-    private RadioButton terrainMap = findViewById(R.id.terrain_map);
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private FusedLocationProviderClient fusedLocationProviderClient ;
      private LocationCallback locationCallback;
@@ -68,6 +69,8 @@ public class MapsActivity extends FragmentActivity
 
      double longitude;
      double latitude;
+
+     Button btnList;//= findViewById(R.id.homeBtn);
     private static final float DEFAULT_ZOOM = 15f;
 
     //widgets
@@ -82,6 +85,7 @@ public class MapsActivity extends FragmentActivity
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
 
         if(checkLocationPermission()){
             requestCurrentLocation();
@@ -102,17 +106,17 @@ public class MapsActivity extends FragmentActivity
                         if (checkedId == normalMap.getId()) {
                             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-                        } else if (checkedId == satelliteMap.getId()) {
-                            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-
                         } else if (checkedId == hybridMap.getId()) {
                             mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-
-                        } else if (checkedId == terrainMap.getId()) {
-                            mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
                         }
                     }
                 });
+        /*btnList.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(MapsActivity.this, ListActivity.class);
+                startActivity(intent);
+            }
+        });*/
     }
 
     private boolean checkLocationPermission(){
