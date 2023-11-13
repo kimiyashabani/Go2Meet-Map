@@ -1,27 +1,29 @@
 package com.firstapp.go2meet_map;
-
+import android.content.res.Resources;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.RequiresApi;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentActivity;
-import android.os.Bundle;
 
+import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Bundle;
+import android.util.Log;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.firstapp.go2meet_map.databinding.ActivityMapsBinding;
-import androidx.annotation.RequiresApi;
-
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
-
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -46,34 +48,33 @@ import android.location.LocationRequest;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Context;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class MapsActivity extends FragmentActivity
-        implements OnMapReadyCallback {
-
+        implements OnMapReadyCallback, SensorEventListener {
+    /** DEFINING MAP **/
     private GoogleMap mMap;
     private UiSettings uiSettings;
-
     private ActivityMapsBinding binding;
     private RadioGroup radioGroup;
     private RadioButton normalMap;
-
     private RadioButton hybridMap;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private FusedLocationProviderClient fusedLocationProviderClient ;
-     private LocationCallback locationCallback;
-     private static final String TAG = "MapActivity";
+    private LocationCallback locationCallback;
+    private static final String TAG = MapsActivity.class.getSimpleName();
+    double longitude;
+    double latitude;
 
-     double longitude;
-     double latitude;
+    /** DEFINING LIGHT SENSOR **/
+    private SensorManager sensorManager;
+    private Sensor lightSensor;
+    boolean lightSensorActivated;
 
-     //Button btnList;//= findViewById(R.id.homeBtn);
-    private static final float DEFAULT_ZOOM = 15f;
-
+    //Button btnList;//= findViewById(R.id.homeBtn);
     //widgets
     private EditText searchText;
 
@@ -85,6 +86,15 @@ public class MapsActivity extends FragmentActivity
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+
+        if (lightSensor == null) {
+            Toast.makeText(this, "Light sensor not available", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
         radioGroup = findViewById(R.id.radioGroup);
         normalMap = findViewById(R.id.normal_map);
         hybridMap = findViewById(R.id.hybrid_map);
@@ -111,6 +121,9 @@ public class MapsActivity extends FragmentActivity
                 );
             });
         }
+
+
+        //sensorManager.registerListener(MapsActivity.this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
         /*btnList.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(MapsActivity.this, ListActivity.class);
@@ -142,13 +155,10 @@ public class MapsActivity extends FragmentActivity
                 }
             }else {
                 //permission was denied
-                showToast(this,"he current location cannot be get because there is no permisson to do so\"");
+                showToast("The current location cannot be get because there is no permisson to do so");
             }
         }
 
-    }
-    private void showToast(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
     /*private void init(){
@@ -203,6 +213,19 @@ public class MapsActivity extends FragmentActivity
         if(checkLocationPermission()){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.mapstyle_retro));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
     }
 
     public void requestCurrentLocation(){
@@ -234,5 +257,50 @@ public class MapsActivity extends FragmentActivity
 
         // parsed lat and lang ???
 
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+        /*float lightLevel = event.values[0];
+
+        // Adjust this threshold based on your application's requirements
+        if (lightLevel < 1000) {
+            try {
+                boolean success = mMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                                this, R.raw.mapstyle_night));
+
+                if (!success) {
+                    Log.e(TAG, "Style parsing failed.");
+                }
+            } catch (Resources.NotFoundException e) {
+                Log.e(TAG, "Can't find style. Error: ", e);
+            }
+        }
+
+         */
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        if (accuracy < 100) {
+            try {
+                boolean success = mMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                                this, R.raw.mapstyle_night));
+
+                if (!success) {
+                    Log.e(TAG, "Style parsing failed.");
+                }
+            } catch (Resources.NotFoundException e) {
+                Log.e(TAG, "Can't find style. Error: ", e);
+            }
+        }
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
