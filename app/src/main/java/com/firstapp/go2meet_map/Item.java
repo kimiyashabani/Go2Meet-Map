@@ -10,8 +10,8 @@ public class Item {
     private String weekdays;
     private String eventName;
     private boolean isFree;
-    private long latitude;
-    private long longitude;
+    private double latitude;
+    private double longitude;
     private String time;
     private String url;
     private String place;
@@ -29,16 +29,17 @@ public class Item {
         this.time = time;
     }
 
-    public void setLatitude(long latitude) {
-        this.latitude = latitude;
+    public void setLatitude(String latitude) {
+        this.latitude =Double.parseDouble(latitude);
     }
 
-    public void setLongitude(long longitude) {
-        this.longitude = longitude;
+    public void setLongitude(String longitude) {
+        this.longitude =Double.parseDouble(longitude);
     }
 
-    public void setFree(boolean free) {
-        isFree = free;
+    public void setFree(String free) {
+        if (free=="0") isFree=false;
+        else isFree=true;
     }
 
     private Long key;
@@ -53,7 +54,7 @@ public class Item {
     public void setEndDate(String endDate) {
         SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-DD");
         try {
-            this.startDate= formatter.parse(endDate);
+            this.endDate= formatter.parse(endDate);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -64,16 +65,8 @@ public class Item {
     public void setEventName(String eventName) {
         this.eventName = eventName;
     }
-    public void setDate(String date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-DD");
-        try {
-            this.startDate= formatter.parse(date);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public void setKey(Long key) {
-        this.key = key;
+    public void setType(String type){
+        this.type=type;
     }
     public Item() {
         eventName="";
@@ -82,18 +75,6 @@ public class Item {
         endDate=null;
 
     }
-
-    public Item(String EventName, String date, long key){
-        this.eventName = eventName;
-        SimpleDateFormat formatter = new SimpleDateFormat("DD/MM/YYYY");
-        try {
-            this.startDate= formatter.parse(date);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        this.key=key;
-    }
-
     public String getEventName() {
         return eventName;
     }

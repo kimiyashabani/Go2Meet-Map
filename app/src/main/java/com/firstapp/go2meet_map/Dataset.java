@@ -17,8 +17,8 @@ public class Dataset {
         eventTypes =new ArrayList<>();
     }
 
-    public void fill(List<Item> items){
-        listofitems=items;
+    public void fillDB(DBHelper dbHelper){
+        dbHelper.getItems(listofitems, eventTypes);
     }
 
     public void clear(){

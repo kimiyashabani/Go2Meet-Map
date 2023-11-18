@@ -1,11 +1,11 @@
 package com.firstapp.go2meet_map;
 import android.content.res.Resources;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.annotation.RequiresApi;
-import androidx.core.content.res.ResourcesCompat;
+
 import androidx.fragment.app.FragmentActivity;
 
-import android.graphics.drawable.Drawable;
+
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -26,17 +26,9 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import com.google.android.gms.location.CurrentLocationRequest;
@@ -45,16 +37,12 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnSuccessListener;
 import android.location.LocationRequest;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.content.Context;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback, SensorEventListener {
+    private Dataset dataset=new Dataset();
     /** DEFINING MAP **/
     private GoogleMap mMap;
     private UiSettings uiSettings;
@@ -120,6 +108,17 @@ public class MapsActivity extends FragmentActivity
                         new LatLng(latitude, longitude), 15f)
                 );
             });
+            LoadingThread t= new LoadingThread(dataset);
+            t.start();
+            while (dataset.size() < 50){
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            Log.d("Maps activity", "Finished parsing the data");
+            //dataset.fillDB(new DBHelper(this));
         }
 
 
