@@ -18,11 +18,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:cardCornerRadius="20dp"
+            android:layout_gravity="center"
             android:elevation="10dp">
+
             <ImageView
                 android:id="@+id/madridImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="380dp"
+                android:layout_height="280dp"
                 android:layout_gravity="center_horizontal"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"

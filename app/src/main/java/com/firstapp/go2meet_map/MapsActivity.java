@@ -92,7 +92,6 @@ public class MapsActivity extends FragmentActivity
             sensorManager.registerListener(lightSensorListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
         listButton = findViewById(R.id.listBtn);
-
         radioGroup = findViewById(R.id.radioGroup);
         hybridMap = findViewById(R.id.hybrid_map);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
@@ -127,8 +126,6 @@ public class MapsActivity extends FragmentActivity
         }
         Log.d("Maps activity", "Finished parsing the data");
         dataset.fillDB(new DBHelper(this));
-
-
         }
         listButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,8 +134,6 @@ public class MapsActivity extends FragmentActivity
                 startActivity(intent);
             }
         });
-
-
 
     }
 
@@ -172,34 +167,48 @@ public class MapsActivity extends FragmentActivity
     }
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
-        uiSettings =mMap.getUiSettings();
+        uiSettings = mMap.getUiSettings();
         uiSettings.setMyLocationButtonEnabled(false);
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        if(checkLocationPermission()){
+        itemsList = dataset.getListofitems();
+        if (itemsList != null && !itemsList.isEmpty()) {
+            for (int i = 0; i < itemsList.size(); i++) {
+                Item item = itemsList.get(i);
+                double longitude = item.getLongitude();
+                double latitude = item.getLatitude();
+                LatLng location = new LatLng(latitude, longitude);
+                marker = mMap.addMarker(new MarkerOptions()
+                        .position(location)
+                        .title(item.getEventName())
+                );
+                marker.setTag(item);
+
+            }
+        } else {
+            showToast("i am empty");
+
+        }
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker clickedMarker) {
+                Item clickedItem = (Item) clickedMarker.getTag();
+                if (clickedItem !=null){
+                    Intent intent = new Intent(MapsActivity.this, DetailActivity.class);
+                    intent.putExtra("marker position", clickedItem.getEventName());
+                    startActivity(intent);
+                }
+                return false;
+            }
+        });
+
+        if (checkLocationPermission()) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
 
-        //Adding pins here:
-        for(Item i: itemsList ){
-            LatLng location = new LatLng(i.getLatitude(), i.getLongitude());
-            marker = mMap.addMarker(new MarkerOptions().position(location));
-            marker.setTag(i); // I identified here which marker was clicked
-        }
-        /*mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(@NonNull LatLng latLng) {
-                int position = (int) marker.getTag();
-                Intent intent = new Intent(MapsActivity.this , DetailActivity.class);
-                intent.putExtra("marker position" , position);
-                startActivity(intent);
-            }
-        });*/
-
-
 
     }
-
     public void requestCurrentLocation(){
         try{
             CurrentLocationRequest locationRequest = new CurrentLocationRequest.Builder()
@@ -227,8 +236,8 @@ public class MapsActivity extends FragmentActivity
         @Override
         public void onSensorChanged(SensorEvent event) {
             float lightLevel = event.values[0];
-            Log.d("TAG", Integer.toString((int) lightLevel));
-            if (lightLevel < 150) {
+
+            if (lightLevel < 300) {
                 hybridMap.setBackgroundResource(R.drawable.btn_dark_mode);
                 listButton.setBackgroundResource(R.drawable.btn_dark_mode);
                 changeToNightTheme(mMap);
