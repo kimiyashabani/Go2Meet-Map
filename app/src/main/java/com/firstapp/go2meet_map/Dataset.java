@@ -11,6 +11,10 @@ public class Dataset {
 
     private List<String> eventTypes;
 
+    public List<Item> getListofitems() {
+        return listofitems;
+    }
+
     public Dataset() {
         Log.d(TAG, "Dataset() called");
         listofitems = new ArrayList<>();
