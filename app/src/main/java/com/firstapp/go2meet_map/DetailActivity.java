@@ -21,7 +21,7 @@ public class DetailActivity extends AppCompatActivity {
 
         TextView visitWebsite = findViewById(R.id.linkTextView);
         TextView startTime= findViewById(R.id.startTimeTextView);
-        TextView startDate= findViewById(R.id.startDateTextView;
+        TextView startDate= findViewById(R.id.startDateTextView);
         TextView locationDetails = findViewById(R.id.locationDetailsTextView);
         TextView locationName = findViewById(R.id.locationNameTextView);
         checkChat = findViewById(R.id.subscribeButton);
