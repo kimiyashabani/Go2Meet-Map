@@ -97,4 +97,48 @@ public class Item {
     public String getEventName() {
         return eventName;
     }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public String getWeekdays() {
+        return weekdays;
+    }
+
+    public boolean isFree() {
+        return isFree;
+    }
+
+    public long getLatitude() {
+        return latitude;
+    }
+
+    public long getLongitude() {
+        return longitude;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getPlace() {
+        return place;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public Long getKey() {
+        return key;
+    }
 }
