@@ -9,7 +9,7 @@ public class Item {
     private Date endDate;
     private String weekdays;
     private String eventName;
-    private boolean isFree;
+    private String isFree;
     private double latitude;
     private double longitude;
     private String time;
@@ -38,8 +38,7 @@ public class Item {
     }
 
     public void setFree(String free) {
-        if (free=="0") isFree=false;
-        else isFree=true;
+        this.isFree=free;
     }
 
     private Long key;
@@ -68,6 +67,51 @@ public class Item {
     public void setType(String type){
         this.type=type;
     }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public String getWeekdays() {
+        return weekdays;
+    }
+
+    public String isFree() {
+        return isFree;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getPlace() {
+        return place;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public Long getKey() {
+        return key;
+    }
+
     public Item() {
         eventName="";
         key=0L;

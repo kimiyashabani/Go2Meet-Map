@@ -42,7 +42,7 @@ public class DBHelper extends SQLiteOpenHelper{
                 + endDate_COL + " Date,"
                 + weekdays_COL + " TEXT,"
                 + eventName_COL + " TEXT,"
-                + isFree_COL + "INTEGER,"
+                + isFree_COL + "BOOL,"
                 + latitude_COL + "DOUBLE,"
                 + longitude_COL + "DOUBLE,"
                 + time_COL + "TEXT,"
@@ -80,7 +80,7 @@ public class DBHelper extends SQLiteOpenHelper{
         // content values to our table.
         db.insert(TABLE_NAME, null, values);
     }
-    public void getItems(List<Item> items, List<String> types){
+    public int getItems(List<Item> items, List<String> types){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(
                 TABLE_NAME,
@@ -91,6 +91,7 @@ public class DBHelper extends SQLiteOpenHelper{
                 null,
                 null
         );
+        if(cursor.getCount()<10)return -1;
         while (cursor.moveToNext()){
             Item item=new Item();
             item.setStartDate(cursor.getString(1));
@@ -111,6 +112,7 @@ public class DBHelper extends SQLiteOpenHelper{
             items.add(item);
         }
         cursor.close();
+        return 0;
     }
 
     @Override

@@ -57,6 +57,8 @@ public class MapsActivity extends FragmentActivity
     double longitude;
     double latitude;
 
+    DBHelper db = new DBHelper(this);
+
     /** DEFINING LIGHT SENSOR **/
     private SensorManager sensorManager;
     private Sensor lightSensor;
@@ -108,15 +110,15 @@ public class MapsActivity extends FragmentActivity
                         new LatLng(latitude, longitude), 15f)
                 );
             });
-            LoadingThread t= new LoadingThread(dataset);
+            LoadingThread t= new LoadingThread(dataset, db);
             t.start();
-            while (dataset.size() < 50){
+            /*while (dataset.size() < 50){//TODO substitute this for an observer of the size value of the dataset
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-            }
+            }*/
             Log.d("Maps activity", "Finished parsing the data");
             //dataset.fillDB(new DBHelper(this));
         }
