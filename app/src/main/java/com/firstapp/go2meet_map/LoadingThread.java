@@ -21,7 +21,8 @@ public class LoadingThread extends Thread {
     public void run(){
         if (dataset.fillDB(db)<0){
             fillDatabase();
-        }
+            Log.d("DATASET","DATASET FILLED FILLED FROM XML FILE");
+        }else Log.d("DATASET","DATASET was filled from database");
     }
 
     private void fillDatabase() {

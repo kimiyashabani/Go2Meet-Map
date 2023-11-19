@@ -133,18 +133,14 @@ public class MapsActivity extends FragmentActivity
             //dataset.fillDB(new DBHelper(this));
         }
 
-
-        }
         listButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MapsActivity.this, ListActivity.class);
                 startActivity(intent);
             }
+
         });
-
-
-
     }
 
     private boolean checkLocationPermission(){
