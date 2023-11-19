@@ -5,10 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
-import androidx.annotation.Nullable;
-
-import java.util.Date;
 import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper{
@@ -17,18 +15,18 @@ public class DBHelper extends SQLiteOpenHelper{
 
     // below int is our database version
     private static final int DB_VERSION = 1;
-    private String ID_COL= "id";
-    private String startDate_COL= "startDate";
-    private String endDate_COL="endDate";
-    private String weekdays_COL= "weekdays";
-    private String eventName_COL="eventName";
-    private String isFree_COL="isFree";
-    private String latitude_COL="latitude";
-    private String longitude_COL="longitude";
-    private String time_COL="time";
-    private String url_COL="url";
-    private String place_COL="place";
-    private String type_COL="type";
+    private final String ID_COL= "id";
+    private final String startDate_COL= "startDate";
+    private final String endDate_COL="endDate";
+    private final String weekdays_COL= "weekdays";
+    private final String eventName_COL="eventName";
+    private final String isFree_COL="isFree";
+    private final String latitude_COL="latitude";
+    private final String longitude_COL="longitude";
+    private final String time_COL="time";
+    private final String url_COL="url";
+    private final String place_COL="place";
+    private final String type_COL="type";
 
     public DBHelper(Context context){
         super(context, DB_NAME, null, DB_VERSION);
@@ -38,18 +36,18 @@ public class DBHelper extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         String query = "CREATE TABLE " + TABLE_NAME + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + startDate_COL + "Date,"
-                + endDate_COL + " Date,"
+                + startDate_COL + " TEXT,"
+                + endDate_COL + " TEXT,"
                 + weekdays_COL + " TEXT,"
                 + eventName_COL + " TEXT,"
-                + isFree_COL + "INTEGER,"
-                + latitude_COL + "DOUBLE,"
-                + longitude_COL + "DOUBLE,"
-                + time_COL + "TEXT,"
-                + url_COL + "TEXT,"
-                + place_COL+ "TEXT,"
-                + type_COL+ "TEXT)";
-
+                + isFree_COL + " BOOL,"
+                + latitude_COL + " DOUBLE,"
+                + longitude_COL + " DOUBLE,"
+                + time_COL + " TEXT,"
+                + url_COL + " TEXT,"
+                + place_COL+ " TEXT,"
+                + type_COL+ " TEXT)";
+        Log.d("DATABASE: Create",query);
         // at last we are calling a exec sql
         // method to execute above sql query
         db.execSQL(query);
@@ -63,12 +61,12 @@ public class DBHelper extends SQLiteOpenHelper{
         ContentValues values = new ContentValues();
 
         // on below line we are passing all values
-        // along with its key and value pair.
+        // along with its key and value pair
         values.put(startDate_COL, startDate);
         values.put(endDate_COL, endDate);
         values.put(weekdays_COL,weekdays);
         values.put(eventName_COL, eventName);
-        values.put(isFree_COL, isFree.toString());
+        values.put(isFree_COL, isFree);
         values.put(latitude_COL, latitude);
         values.put(longitude_COL,longitude);
         values.put(time_COL,time);
@@ -78,9 +76,9 @@ public class DBHelper extends SQLiteOpenHelper{
 
         // after adding all values we are passing
         // content values to our table.
-        db.insert(TABLE_NAME, null, values);
+        db.insert(TABLE_NAME,null, values);
     }
-    public void getItems(List<Item> items, List<String> types){
+    public int getItems(List<Item> items, List<String> types){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(
                 TABLE_NAME,
@@ -91,6 +89,7 @@ public class DBHelper extends SQLiteOpenHelper{
                 null,
                 null
         );
+        if(cursor.getCount()<10)return -1;
         while (cursor.moveToNext()){
             Item item=new Item();
             item.setStartDate(cursor.getString(1));
@@ -111,6 +110,7 @@ public class DBHelper extends SQLiteOpenHelper{
             items.add(item);
         }
         cursor.close();
+        return 0;
     }
 
     @Override

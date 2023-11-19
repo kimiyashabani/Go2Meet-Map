@@ -14,11 +14,18 @@ public class LoadingThread extends Thread {
 
     private final String XML_URL="https://datos.madrid.es/egob/catalogo/206974-0-agenda-eventos-culturales-100.xml";
     Dataset dataset;
-    LoadingThread(Dataset dataset){this.dataset=dataset;}
-
+    DBHelper db;
+    LoadingThread(Dataset dataset, DBHelper db){this.dataset=dataset;this.db=db;}
 
     @Override
-    public void run() {
+    public void run(){
+        if (dataset.fillDB(db)<0){
+            fillDatabase();
+            Log.d("DATASET","DATASET FILLED FILLED FROM XML FILE");
+        }else Log.d("DATASET","DATASET was filled from database");
+    }
+
+    private void fillDatabase() {
         URL url;
         try {
             url = new URL(XML_URL);
@@ -102,6 +109,7 @@ public class LoadingThread extends Thread {
                                 } while (eventType == XmlPullParser.TEXT && parser.isWhitespace());
                             }
                             dataset.addElement(item);
+                            db.addItem(item.getStartDate().toString(),item.getEndDate().toString(),item.getWeekdays(), item.getEventName(),item.isFree(),Double.toString(item.getLatitude()),Double.toString(item.getLongitude()),item.getTime(),item.getUrl(),item.getPlace(), item.getType());
                         }
                 }
                 eventType=parser.next();

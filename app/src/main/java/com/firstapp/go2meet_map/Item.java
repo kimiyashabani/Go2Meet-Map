@@ -5,11 +5,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Item {
-    private Date startDate;
-    private Date endDate;
+    private String startDate;
+    private String endDate;
     private String weekdays;
     private String eventName;
-    private boolean isFree;
+    private String isFree;
     private double latitude;
     private double longitude;
     private String time;
@@ -37,27 +37,20 @@ public class Item {
         this.longitude =Double.parseDouble(longitude);
     }
 
+    public String getEventName() {
+        return eventName;
+    }
+
     public void setFree(String free) {
-        if (free=="0") isFree=false;
-        else isFree=true;
+        this.isFree=free;
     }
 
     private Long key;
     public void setStartDate(String startDate) {
-        SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-DD");
-        try {
-            this.startDate= formatter.parse(startDate);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+            this.startDate= startDate;
     }
     public void setEndDate(String endDate) {
-        SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-DD");
-        try {
-            this.endDate= formatter.parse(endDate);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        this.endDate= endDate;
     }
     public void setWeekdays(String weekdays) {
         this.weekdays = weekdays;
@@ -68,22 +61,12 @@ public class Item {
     public void setType(String type){
         this.type=type;
     }
-    public Item() {
-        eventName="";
-        key=0L;
-        startDate=null;
-        endDate=null;
 
-    }
-    public String getEventName() {
-        return eventName;
-    }
-
-    public Date getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public Date getEndDate() {
+    public String getEndDate() {
         return endDate;
     }
 
@@ -91,7 +74,7 @@ public class Item {
         return weekdays;
     }
 
-    public boolean isFree() {
+    public String isFree() {
         return isFree;
     }
 
@@ -121,5 +104,13 @@ public class Item {
 
     public Long getKey() {
         return key;
+    }
+
+    public Item() {
+        eventName="";
+        key=0L;
+        startDate=null;
+        endDate=null;
+
     }
 }
