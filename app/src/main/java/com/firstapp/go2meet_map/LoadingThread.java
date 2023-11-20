@@ -1,5 +1,8 @@
 package com.firstapp.go2meet_map;
 
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -13,16 +16,25 @@ public class LoadingThread extends Thread {
 //This thread will download the source xml file and parse its information, as well as fill the dataset
 
     private final String XML_URL="https://datos.madrid.es/egob/catalogo/206974-0-agenda-eventos-culturales-100.xml";
+    Handler creator;
     Dataset dataset;
     DBHelper db;
-    LoadingThread(Dataset dataset, DBHelper db){this.dataset=dataset;this.db=db;}
+    LoadingThread(Dataset dataset, Handler handler, DBHelper db){
+        this.dataset=dataset;
+        this.creator=handler;
+        this.db=db;
+    }
 
     @Override
     public void run(){
+        Message msg = creator.obtainMessage();
+        Bundle msg_data = msg.getData();
         if (dataset.fillDB(db)<0){
             fillDatabase();
             Log.d("DATASET","DATASET FILLED FILLED FROM XML FILE");
         }else Log.d("DATASET","DATASET was filled from database");
+        msg_data.putBoolean("Full",true);
+        msg.sendToTarget();
     }
 
     private void fillDatabase() {
@@ -61,7 +73,7 @@ public class LoadingThread extends Thread {
                                 }
                                 //Go through the attributes of the event
                                 String debug=parser.getAttributeValue(0);
-                                if(debug!=null)Log.d("Loading thread: string ->", debug);
+                                if(debug!=null)
                                 switch (debug){
                                     case "TITULO":
                                         item.setEventName(parser.nextText());

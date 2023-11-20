@@ -6,11 +6,15 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 
 
+import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -54,6 +58,8 @@ import android.view.View;
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback, SensorEventListener {
     /** DEFINING MAP **/
+    //This variable is set to true when the dataset is full of items
+    private boolean datasetReady= false;
     Dataset dataset = new Dataset();
     private GoogleMap mMap;
     private UiSettings uiSettings;
@@ -68,13 +74,9 @@ public class MapsActivity extends FragmentActivity
     double longitude;
     double latitude;
     private GoogleMap googleMap;
-
-    DBHelper db = new DBHelper(this);
-
     /** DEFINING LIGHT SENSOR **/
     private SensorManager sensorManager;
     private Sensor lightSensor;
-    private List<Item> itemsList;
     Button listButton;
 
     Marker marker;
@@ -90,11 +92,7 @@ public class MapsActivity extends FragmentActivity
         setContentView(binding.getRoot());
         Log.d(TAG, "binding done");
 
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        if (lightSensor != null) {
-            sensorManager.registerListener(lightSensorListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        }
+
         listButton = findViewById(R.id.listBtn);
 
         radioGroup = findViewById(R.id.radioGroup);
@@ -120,15 +118,18 @@ public class MapsActivity extends FragmentActivity
                         new LatLng(latitude, longitude), 15f)
                 );
             });
-            LoadingThread t= new LoadingThread(dataset, db);
-            t.start();
-            /*while (dataset.size() < 50){//TODO substitute this for an observer of the size value of the dataset
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+            Handler handler = new Handler(Looper.getMainLooper()) {
+                @Override
+                public void handleMessage(@NonNull Message msg) {
+                    // message received from background thread: load complete (or failure)
+                    super.handleMessage(msg);
+                    if((msg.getData().getBoolean("full"))) {
+                        datasetReady=true;
+                    }
                 }
-            }*/
+            };
+            LoadingThread t= new LoadingThread(dataset, handler, new DBHelper(this));
+            t.start();
             Log.d("Maps activity", "Finished parsing the data");
             //dataset.fillDB(new DBHelper(this));
         }
@@ -174,19 +175,46 @@ public class MapsActivity extends FragmentActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        uiSettings =mMap.getUiSettings();
+        uiSettings = mMap.getUiSettings();
         uiSettings.setMyLocationButtonEnabled(false);
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        if(checkLocationPermission()){
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-        }
+        while(datasetReady){}
+        Log.d("DATASET","Elements in the dataset: "+dataset.size());
+        if (!dataset.getListofitems().isEmpty()) {
+            showToast("i am not empty" + dataset.getListofitems().size());
+            for (int i = 0; i < dataset.getListofitems().size(); i++) {
+                Item item = dataset.getListofitems().get(i);
+                double longitude = item.getLongitude();
+                double latitude = item.getLatitude();
+                LatLng location = new LatLng(latitude, longitude);
+                marker = mMap.addMarker(new MarkerOptions()
+                        .position(location)
+                        .title(item.getEventName())
+                );
+                marker.setTag(item);
 
-        //Adding pins here:
-        for(Item i: itemsList ){
-            LatLng location = new LatLng(i.getLatitude(), i.getLongitude());
-            marker = mMap.addMarker(new MarkerOptions().position(location));
-            marker.setTag(i); // I identified here which marker was clicked
+            }
+        } else {
+            showToast("i am empty");
+
         }
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker clickedMarker) {
+                Item clickedItem = (Item) clickedMarker.getTag();
+                if (clickedItem !=null){
+                    Intent intent = new Intent(MapsActivity.this, DetailActivity.class);
+                    String eventName = (String) clickedItem.getEventName();
+                    String eventLocation = (String) clickedItem.getPlace();
+                    String eventDate = (String) clickedItem.getStartDate();
+                    String eventTime = (String) clickedItem.getTime();
+                    intent.putExtra("marker position", eventName);
+                    startActivity(intent);
+                }
+                return false;
+            }
+        });
+        //Adding pins here:
         /*mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(@NonNull LatLng latLng) {
@@ -228,12 +256,11 @@ public class MapsActivity extends FragmentActivity
         @Override
         public void onSensorChanged(SensorEvent event) {
             float lightLevel = event.values[0];
-            Log.d("TAG", Integer.toString((int) lightLevel));
             if (lightLevel < 150) {
                 hybridMap.setBackgroundResource(R.drawable.btn_dark_mode);
                 listButton.setBackgroundResource(R.drawable.btn_dark_mode);
                 changeToNightTheme(mMap);
-            } else {
+            } else if (lightLevel > 250){
                 hybridMap.setBackgroundResource(R.drawable.btn_round_corner);
                 listButton.setBackgroundResource(R.drawable.btn_round_corner);
                 if (mMap != null) {
@@ -266,6 +293,7 @@ public class MapsActivity extends FragmentActivity
 
     public void changeToNightTheme(GoogleMap googleMap){
         try {
+            while(googleMap==null){}
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             this, R.raw.mapstyle_night));
