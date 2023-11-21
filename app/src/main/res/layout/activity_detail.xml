@@ -24,8 +24,7 @@
             <ImageView
                 android:id="@+id/madridImage"
                 android:layout_width="380dp"
-                android:layout_height="280dp"
-                android:layout_gravity="center_horizontal"
+                android:layout_height="250dp"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/madrid"></ImageView>
@@ -39,117 +38,123 @@
             android:clickable="true"
             android:drawableLeft="@drawable/baseline_record_voice_over_24"
             android:textSize="24sp" />
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:paddingRight="10dp">
-                <TextView
-                    android:id="@+id/locationTitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:text=" Location : "
-                    android:drawableStart="@drawable/baseline_pin_drop_24"
-                    android:textStyle="bold"
-                    android:textSize="18sp" />
-                <TextView
-                    android:id="@+id/locationDetailsTextView"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingRight="10dp">
+                    <TextView
+                        android:id="@+id/locationTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text=" Location : "
+                        android:drawableStart="@drawable/baseline_pin_drop_24"
+                        android:textStyle="bold"
+                        android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/locationDetailsTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text="Location Details"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:text="Location Details"
-                    android:textSize="18sp" />
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingRight="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text=" Date : "
+                        android:drawableStart="@drawable/baseline_date_range_24"
+                        android:textStyle="bold"
+                        android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/startDateTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text="start date Details"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingRight="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text=" Start Time : "
+                        android:drawableStart="@drawable/baseline_watch_later_24"
+                        android:textStyle="bold"
+                        android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/startTimeTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text="start time Details"
+                        android:textSize="18sp" />
+                </LinearLayout>
+                <TextView
+                    android:id="@+id/linkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Check Our Website"
+                    android:textColor="@color/blue"
+                    android:drawableEnd="@drawable/baseline_arrow_outward_24"
+                    android:clickable="true"
+                    android:textSize="18sp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:autoLink="web" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:gravity="center">
+
+                    <Button
+                        android:id="@+id/backToMapButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/btn_stroke"
+                        android:text="check map" />
+
+                    <Button
+                        android:id="@+id/subscribeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_round_corner"
+                        android:text="Enter live chat" />
+                </LinearLayout>
 
             </LinearLayout>
+        </ScrollView>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:paddingRight="10dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:text=" Date : "
-                    android:drawableStart="@drawable/baseline_date_range_24"
-                    android:textStyle="bold"
-                    android:textSize="18sp" />
-                <TextView
-                    android:id="@+id/startDateTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:text="start date Details"
-                    android:textSize="18sp" />
 
-            </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:paddingRight="10dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:text=" Start Time : "
-                    android:drawableStart="@drawable/baseline_watch_later_24"
-                    android:textStyle="bold"
-                    android:textSize="18sp" />
-                <TextView
-                    android:id="@+id/startTimeTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:text="start time Details"
-                    android:textSize="18sp" />
-            </LinearLayout>
-            <TextView
-                android:id="@+id/linkTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Check Our Website"
-                android:textColor="@color/blue"
-                android:drawableEnd="@drawable/baseline_arrow_outward_24"
-                android:clickable="true"
-                android:textSize="18sp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:autoLink="web" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:gravity="center">
-
-            <Button
-                android:id="@+id/backToMapButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/btn_stroke"
-                android:text="check map" />
-
-            <Button
-                android:id="@+id/subscribeButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/btn_round_corner"
-                android:text="Enter live chat" />
-        </LinearLayout>
     </LinearLayout>
 
 
