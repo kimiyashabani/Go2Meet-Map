@@ -37,7 +37,10 @@
         android:layout_alignBottom="@id/messageInput"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="16dp"
+        android:background="@drawable/btn_round_corner"
         android:onClick="sendMessage"
-        android:text="Send"/>
+        android:text="Send"
+        android:textColor="@color/white"
+        />
 
 </RelativeLayout>
