@@ -66,7 +66,7 @@ public class MapsActivity extends FragmentActivity
     private ActivityMapsBinding binding;
     private RadioGroup radioGroup;
     private RadioButton normalMap;
-    private RadioButton hybridMap;
+    private RadioButton accMap;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private FusedLocationProviderClient fusedLocationProviderClient ;
     private LocationCallback locationCallback;
@@ -78,33 +78,34 @@ public class MapsActivity extends FragmentActivity
     private SensorManager sensorManager;
     private Sensor lightSensor;
     Button listButton;
-
     Marker marker;
-    boolean flag = false;
 
     @RequiresApi(api = Build.VERSION_CODES.S)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //searchText = (EditText) findViewById(R.id.inputSearch);
-
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         Log.d(TAG, "binding done");
 
-
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        if (lightSensor != null) {
+            sensorManager.registerListener(lightSensorListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
         listButton = findViewById(R.id.listBtn);
-
         radioGroup = findViewById(R.id.radioGroup);
-        hybridMap = findViewById(R.id.hybrid_map);
+        accMap = findViewById(R.id.acc_map);
+        normalMap=findViewById(R.id.normal_map);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
             @Override
             public void onCheckedChanged(RadioGroup group,int checkedId){
-
-                if (checkedId == hybridMap.getId()) {
+                if (checkedId == accMap.getId()) {
                     AccMap(mMap);
                 }
-
+                if (checkedId == normalMap.getId()) {
+                    mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                }
             }
         });
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -126,6 +127,23 @@ public class MapsActivity extends FragmentActivity
                     if((msg.getData().getBoolean("full"))) {
                         datasetReady=true;
                     }
+                    while(datasetReady){}
+                    Log.d("DATASET","Elements in the dataset: "+dataset.size());
+                    if (!dataset.getListofitems().isEmpty()) {
+                        for (int i = 0; i < dataset.getListofitems().size(); i++) {
+                            Item item = dataset.getListofitems().get(i);
+                            double longitude = item.getLongitude();
+                            double latitude = item.getLatitude();
+                            LatLng location = new LatLng(latitude, longitude);
+                            marker = mMap.addMarker(new MarkerOptions()
+                                    .position(location)
+                                    .title(item.getEventName())
+                            );
+                            marker.setTag(item);
+                        }
+                    } else {
+                        showToast("I am empty");
+                    }
                 }
             };
             LoadingThread t= new LoadingThread(dataset, handler, new DBHelper(this));
@@ -133,14 +151,12 @@ public class MapsActivity extends FragmentActivity
             Log.d("Maps activity", "Finished parsing the data");
             //dataset.fillDB(new DBHelper(this));
         }
-
         listButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MapsActivity.this, ListActivity.class);
                 startActivity(intent);
             }
-
         });
     }
 
@@ -167,10 +183,9 @@ public class MapsActivity extends FragmentActivity
                 }
             }else {
                 //permission was denied
-                showToast("The current location cannot be get because there is no permisson to do so");
+                showToast("The current location cannot be get because there is no permission to do so");
             }
         }
-
     }
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -178,26 +193,6 @@ public class MapsActivity extends FragmentActivity
         uiSettings = mMap.getUiSettings();
         uiSettings.setMyLocationButtonEnabled(false);
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        while(datasetReady){}
-        Log.d("DATASET","Elements in the dataset: "+dataset.size());
-        if (!dataset.getListofitems().isEmpty()) {
-            showToast("i am not empty" + dataset.getListofitems().size());
-            for (int i = 0; i < dataset.getListofitems().size(); i++) {
-                Item item = dataset.getListofitems().get(i);
-                double longitude = item.getLongitude();
-                double latitude = item.getLatitude();
-                LatLng location = new LatLng(latitude, longitude);
-                marker = mMap.addMarker(new MarkerOptions()
-                        .position(location)
-                        .title(item.getEventName())
-                );
-                marker.setTag(item);
-
-            }
-        } else {
-            showToast("i am empty");
-
-        }
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker clickedMarker) {
@@ -215,27 +210,13 @@ public class MapsActivity extends FragmentActivity
                     intent.putExtra("endDate", endDate);
                     intent.putExtra("eventLocation", eventLocation);
                     intent.putExtra("eventTime", eventTime);
-                    intent.putExtra("url", url);
+                    intent.putExtra("link_key", url);
                     startActivity(intent);
                 }
                 return false;
             }
         });
-        //Adding pins here:
-        /*mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(@NonNull LatLng latLng) {
-                int position = (int) marker.getTag();
-                Intent intent = new Intent(MapsActivity.this , DetailActivity.class);
-                intent.putExtra("marker position" , position);
-                startActivity(intent);
-            }
-        });*/
-
-
-
     }
-
     private String reverseDate(String input){
         String[] helper = input.split("-");
         StringBuilder sb = new StringBuilder();
@@ -276,27 +257,25 @@ public class MapsActivity extends FragmentActivity
         public void onSensorChanged(SensorEvent event) {
             float lightLevel = event.values[0];
             if (lightLevel < 150) {
-                hybridMap.setBackgroundResource(R.drawable.btn_dark_mode);
+                accMap.setBackgroundResource(R.drawable.btn_dark_mode);
+                normalMap.setBackgroundResource(R.drawable.btn_dark_mode);
                 listButton.setBackgroundResource(R.drawable.btn_dark_mode);
                 changeToNightTheme(mMap);
             } else if (lightLevel > 250){
-                hybridMap.setBackgroundResource(R.drawable.btn_round_corner);
+                accMap.setBackgroundResource(R.drawable.btn_round_corner);
+                normalMap.setBackgroundResource(R.drawable.btn_round_corner);
                 listButton.setBackgroundResource(R.drawable.btn_round_corner);
                 if (mMap != null) {
                     applyDefaultMapStyle();
                 }
             }
         }
-
         @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-        }
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {}
     };
     private void applyDefaultMapStyle() {
         boolean success = mMap.setMapStyle(
                 MapStyleOptions.loadRawResourceStyle(this, R.raw.mapstyle_normal));
-
         if (!success) {
             Log.e("TAG", "Default map style parsing failed.");
         }
@@ -304,12 +283,8 @@ public class MapsActivity extends FragmentActivity
     private void showToast(String message) {Toast.makeText(this, message, Toast.LENGTH_SHORT).show();}
     @Override
     public void onSensorChanged(SensorEvent event) {}
-
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
     public void changeToNightTheme(GoogleMap googleMap){
         try {
             while(googleMap==null){}
