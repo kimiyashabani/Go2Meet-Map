@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class LoadingThread extends Thread {
+public class LoadingThread extends Thread  {
 //This thread will download the source xml file and parse its information, as well as fill the dataset
 
     private final String XML_URL="https://datos.madrid.es/egob/catalogo/206974-0-agenda-eventos-culturales-100.xml";
@@ -35,6 +35,7 @@ public class LoadingThread extends Thread {
         }else Log.d("DATASET","DATASET was filled from database");
         msg_data.putBoolean("Full",true);
         msg.sendToTarget();
+        db.DBClose();
     }
 
     private void fillDatabase() {
@@ -73,7 +74,6 @@ public class LoadingThread extends Thread {
                                 }
                                 //Go through the attributes of the event
                                 String debug=parser.getAttributeValue(0);
-                                if(debug!=null)
                                 switch (debug){
                                     case "TITULO":
                                         item.setEventName(parser.nextText());
@@ -119,9 +119,13 @@ public class LoadingThread extends Thread {
                                 do {
                                     eventType = parser.next();
                                 } while (eventType == XmlPullParser.TEXT && parser.isWhitespace());
+                            }if(item.getLatitude()>50 && item.getLatitude()<30){
+                                //If the item doesn't have latitude or longitude, discard the item
+                                eventCount--;
+                            }else {
+                                dataset.addElement(item);
+                                db.addItem(item.getStartDate().toString(), item.getEndDate().toString(), item.getWeekdays(), item.getEventName(), item.isFree(), Double.toString(item.getLatitude()), Double.toString(item.getLongitude()), item.getTime(), item.getUrl(), item.getPlace(), item.getType());
                             }
-                            dataset.addElement(item);
-                            db.addItem(item.getStartDate().toString(),item.getEndDate().toString(),item.getWeekdays(), item.getEventName(),item.isFree(),Double.toString(item.getLatitude()),Double.toString(item.getLongitude()),item.getTime(),item.getUrl(),item.getPlace(), item.getType());
                         }
                 }
                 eventType=parser.next();

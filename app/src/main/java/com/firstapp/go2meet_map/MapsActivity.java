@@ -59,7 +59,6 @@ public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback, SensorEventListener {
     /** DEFINING MAP **/
     //This variable is set to true when the dataset is full of items
-    private boolean datasetReady= false;
     Dataset dataset = new Dataset();
     private GoogleMap mMap;
     private UiSettings uiSettings;
@@ -125,24 +124,22 @@ public class MapsActivity extends FragmentActivity
                     // message received from background thread: load complete (or failure)
                     super.handleMessage(msg);
                     if((msg.getData().getBoolean("full"))) {
-                        datasetReady=true;
-                    }
-                    while(datasetReady){}
-                    Log.d("DATASET","Elements in the dataset: "+dataset.size());
-                    if (!dataset.getListofitems().isEmpty()) {
-                        for (int i = 0; i < dataset.getListofitems().size(); i++) {
-                            Item item = dataset.getListofitems().get(i);
-                            double longitude = item.getLongitude();
-                            double latitude = item.getLatitude();
-                            LatLng location = new LatLng(latitude, longitude);
-                            marker = mMap.addMarker(new MarkerOptions()
-                                    .position(location)
-                                    .title(item.getEventName())
-                            );
-                            marker.setTag(item);
+                        Log.d("DATASET", "Elements in the dataset: " + dataset.size());
+                        if (!dataset.getListofitems().isEmpty()) {
+                            for (int i = 0; i < dataset.getListofitems().size(); i++) {
+                                Item item = dataset.getListofitems().get(i);
+                                double longitude = item.getLongitude();
+                                double latitude = item.getLatitude();
+                                LatLng location = new LatLng(latitude, longitude);
+                                marker = mMap.addMarker(new MarkerOptions()
+                                        .position(location)
+                                        .title(item.getEventName())
+                                );
+                                marker.setTag(item);
+                            }
+                        } else {
+                            showToast("I am empty");
                         }
-                    } else {
-                        showToast("I am empty");
                     }
                 }
             };
@@ -246,7 +243,6 @@ public class MapsActivity extends FragmentActivity
                             }
                         }
                     });
-
         } catch (SecurityException e){
             e.printStackTrace();
         }

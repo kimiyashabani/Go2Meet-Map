@@ -10,11 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
-    private static final String TAG = "TAGParse, MyAdapter";
     private final Dataset dataset; // reference to the dataset
     public MyAdapter(Dataset dataset) {
         super();
-        Log.d(TAG, "MyAdapter() called");
         this.dataset = dataset;
     }
     @NonNull
@@ -29,10 +27,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
     public void onBindViewHolder(MyViewHolder holder, int position) {
         // this method gives values to the elements of the view holder 'holder'
         // (values corresponding to the item in 'position')
-
         final Item item = dataset.getItemAtPosition(position);
-
-        Log.d(TAG, "onBindViewHolder() called for element in position " + position);
         holder.bindValues(item);
     }
 

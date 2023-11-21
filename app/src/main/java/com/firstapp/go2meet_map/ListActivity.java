@@ -1,10 +1,16 @@
 package com.firstapp.go2meet_map;
 
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -14,9 +20,10 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ListActivity extends AppCompatActivity {
-    private boolean datasetReady=false;
+public class ListActivity extends AppCompatActivity implements SensorEventListener {
     private RecyclerView recyclerView;
+    private SensorManager sensorManager;
+    private Sensor lightSensor;
     MyAdapter recyclerViewAdapter;
     Button mapButton;
     Dataset dataset=new Dataset();
@@ -24,18 +31,42 @@ public class ListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_activity);
+        setTitle("List view of the events");
         recyclerView = findViewById(R.id.recyclerView);
         recyclerViewAdapter = new MyAdapter(dataset);
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(this, recyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override public void onItemClick(View view, int position) {
+                        Item clickedItem=dataset.getItemAtPosition(position);
+                        Intent intent = new Intent(ListActivity.this, DetailActivity.class);
+                        String eventName =  clickedItem.getEventName();
+                        String eventLocation =  clickedItem.getPlace();
+                        String startDate = reverseDate( clickedItem.getStartDate());
+                        String endDate = reverseDate( clickedItem.getEndDate());
+                        String eventTime =  clickedItem.getTime();
+                        String url =  clickedItem.getUrl();
+                        intent.putExtra("eventName", eventName);
+                        intent.putExtra("startDate", startDate);
+                        intent.putExtra("endDate", endDate);
+                        intent.putExtra("eventLocation", eventLocation);
+                        intent.putExtra("eventTime", eventTime);
+                        intent.putExtra("link_key", url);
+                        startActivity(intent);
+                    }
+                })
+        );
         mapButton = findViewById(R.id.mapBtn);
         Handler handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(@NonNull Message msg) {
                 // message received from background thread: load complete (or failure)
                 super.handleMessage(msg);
-                if((msg.getData().getBoolean("full"))) {
-                    datasetReady=true;
+                if((msg.getData().getBoolean("Full"))) {
+                    Log.d("DATASET-LIST", "Dataset has "+dataset.size()+" elements");
+                    recyclerView.getAdapter().notifyDataSetChanged();
                 }
             }
         };
@@ -48,7 +79,34 @@ public class ListActivity extends AppCompatActivity {
             }
 
         });
-        /*while (!datasetReady){}
-        recyclerViewAdapter.notifyDataSetChanged();*/
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        sensorManager.registerListener(ListActivity.this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
+    private String reverseDate(String input){
+        String[] helper = input.split("-");
+        StringBuilder sb = new StringBuilder();
+        for (int i = helper.length - 1; i >= 0; i--) {
+            sb.append(helper[i]);
+            if (i != 0){
+                sb.append("/");
+            }
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType()==Sensor.TYPE_LIGHT){
+            float lightLevel = event.values[0];
+            if (lightLevel < 150) {
+                mapButton.setBackgroundResource(R.drawable.btn_dark_mode);
+            } else if (lightLevel > 250) {
+                mapButton.setBackgroundResource(R.drawable.btn_round_corner);
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 }

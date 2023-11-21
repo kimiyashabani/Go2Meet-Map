@@ -10,6 +10,7 @@ import android.util.Log;
 import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper{
+    SQLiteDatabase db;
     private static final String DB_NAME = "GO2MEETDB";
     private static final String TABLE_NAME = "DATASET";
 
@@ -50,11 +51,12 @@ public class DBHelper extends SQLiteOpenHelper{
         Log.d("DATABASE: Create",query);
         // at last we are calling a exec sql
         // method to execute above sql query
+        query = "CREATE TABLE " + "DBDATE" +" ("+ "LAST_UPDATE" + " TEXT)";
         db.execSQL(query);
     }
     public void addItem(String startDate,String endDate,String weekdays,String eventName, String isFree,
                         String latitude,String longitude,String time,String url,String place, String type) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        db = this.getWritableDatabase();
 
         // on below line we are creating a
         // variable for content values.
@@ -112,7 +114,9 @@ public class DBHelper extends SQLiteOpenHelper{
         cursor.close();
         return 0;
     }
-
+    public void DBClose(){
+        if(db!=null && db.isOpen())db.close();
+    }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
