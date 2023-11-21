@@ -206,9 +206,16 @@ public class MapsActivity extends FragmentActivity
                     Intent intent = new Intent(MapsActivity.this, DetailActivity.class);
                     String eventName = (String) clickedItem.getEventName();
                     String eventLocation = (String) clickedItem.getPlace();
-                    String eventDate = (String) clickedItem.getStartDate();
+                    String startDate = reverseDate((String) clickedItem.getStartDate());
+                    String endDate = reverseDate((String) clickedItem.getEndDate());
                     String eventTime = (String) clickedItem.getTime();
-                    intent.putExtra("marker position", eventName);
+                    String url = (String) clickedItem.getUrl();
+                    intent.putExtra("eventName", eventName);
+                    intent.putExtra("startDate", startDate);
+                    intent.putExtra("endDate", endDate);
+                    intent.putExtra("eventLocation", eventLocation);
+                    intent.putExtra("eventTime", eventTime);
+                    intent.putExtra("url", url);
                     startActivity(intent);
                 }
                 return false;
@@ -227,6 +234,18 @@ public class MapsActivity extends FragmentActivity
 
 
 
+    }
+
+    private String reverseDate(String input){
+        String[] helper = input.split("-");
+        StringBuilder sb = new StringBuilder();
+        for (int i = helper.length - 1; i >= 0; i--) {
+            sb.append(helper[i]);
+            if (i != 0){
+                sb.append("/");
+            }
+        }
+        return sb.toString();
     }
 
     public void requestCurrentLocation(){

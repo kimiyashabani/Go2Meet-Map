@@ -39,6 +39,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chatroom_view);
+        setTitle("Event Chat");
 
         /*
         Intent intent = getIntent();
