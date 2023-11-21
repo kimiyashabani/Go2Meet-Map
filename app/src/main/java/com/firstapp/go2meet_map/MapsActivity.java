@@ -21,6 +21,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.firstapp.go2meet_map.databinding.ActivityMapsBinding;
@@ -59,6 +60,7 @@ public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback, SensorEventListener {
     /** DEFINING MAP **/
     //This variable is set to true when the dataset is full of items
+    private boolean datasetReady= false;
     Dataset dataset = new Dataset();
     private GoogleMap mMap;
     private UiSettings uiSettings;
@@ -70,14 +72,16 @@ public class MapsActivity extends FragmentActivity
     private FusedLocationProviderClient fusedLocationProviderClient ;
     private LocationCallback locationCallback;
     private static final String TAG = MapsActivity.class.getSimpleName();
-    double longitude;
-    double latitude;
+    double longitude = 0;
+    double latitude = 0;
     private GoogleMap googleMap;
     /** DEFINING LIGHT SENSOR **/
     private SensorManager sensorManager;
     private Sensor lightSensor;
     Button listButton;
     Marker marker;
+
+    boolean flag = false;
 
     @RequiresApi(api = Build.VERSION_CODES.S)
     @Override
@@ -100,10 +104,11 @@ public class MapsActivity extends FragmentActivity
             @Override
             public void onCheckedChanged(RadioGroup group,int checkedId){
                 if (checkedId == accMap.getId()) {
+                    flag = true;
                     AccMap(mMap);
-                }
-                if (checkedId == normalMap.getId()) {
-                    mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                }else  if (checkedId == normalMap.getId()){
+                    flag=false;
+                    normalMap(mMap);
                 }
             }
         });
@@ -114,9 +119,18 @@ public class MapsActivity extends FragmentActivity
             ImageButton currentLocationButton = findViewById(R.id.currentLocationBtn);
             currentLocationButton.setOnClickListener(view -> {
                 requestCurrentLocation();
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(latitude, longitude), 15f)
-                );
+
+                if (latitude != 0 && longitude != 0){
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                            new LatLng(latitude, longitude), 15f)
+                    );
+                    LatLng myLocation = new LatLng(latitude,longitude);
+                    marker = mMap.addMarker(new MarkerOptions()
+                            .position(myLocation)
+                            .title("My Location")
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+                    );
+                }
             });
             Handler handler = new Handler(Looper.getMainLooper()) {
                 @Override
@@ -153,6 +167,7 @@ public class MapsActivity extends FragmentActivity
             public void onClick(View v) {
                 Intent intent = new Intent(MapsActivity.this, ListActivity.class);
                 startActivity(intent);
+                AccMap(mMap);
             }
         });
     }
@@ -252,15 +267,17 @@ public class MapsActivity extends FragmentActivity
         @Override
         public void onSensorChanged(SensorEvent event) {
             float lightLevel = event.values[0];
-            if (lightLevel < 150) {
+            if (lightLevel < 150 && flag == false) {
                 accMap.setBackgroundResource(R.drawable.btn_dark_mode);
                 normalMap.setBackgroundResource(R.drawable.btn_dark_mode);
                 listButton.setBackgroundResource(R.drawable.btn_dark_mode);
+                //marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
                 changeToNightTheme(mMap);
-            } else if (lightLevel > 250){
+            } else if (lightLevel > 250 && flag == false){
                 accMap.setBackgroundResource(R.drawable.btn_round_corner);
                 normalMap.setBackgroundResource(R.drawable.btn_round_corner);
                 listButton.setBackgroundResource(R.drawable.btn_round_corner);
+                //marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                 if (mMap != null) {
                     applyDefaultMapStyle();
                 }
@@ -298,7 +315,19 @@ public class MapsActivity extends FragmentActivity
         try {
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
-                            this, R.raw.mapstyle_accessible));
+                            this, R.raw.mapstyle_retro));
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
+    }
+    public void normalMap(GoogleMap googleMap){
+        try {
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.mapstyle_normal));
             if (!success) {
                 Log.e(TAG, "Style parsing failed.");
             }

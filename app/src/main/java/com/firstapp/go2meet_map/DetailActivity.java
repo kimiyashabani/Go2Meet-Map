@@ -94,8 +94,7 @@ public class DetailActivity extends AppCompatActivity {
         cheackMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DetailActivity.this, MapsActivity.class);
-                startActivity(intent);
+               finish();
             }
         });
     }

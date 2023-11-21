@@ -54,6 +54,7 @@ tools:context=".MapsActivity">
             android:padding="10dp"
             android:background="@drawable/btn_round_corner">
         </Button>
+
     </RelativeLayout>
 
 
@@ -81,12 +82,12 @@ tools:context=".MapsActivity">
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Normal map"
-            android:buttonTint="@color/blue"
+            android:buttonTint="@color/white"
             android:background="@drawable/radio_flat_selector"
             android:padding="15dp"
             android:textColor="@color/white"
             android:layout_marginRight="10dp"
-            android:button="@null">
+            >
         </RadioButton>
         <!-- 2 -->
         <RadioButton
@@ -94,13 +95,13 @@ tools:context=".MapsActivity">
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Accessible Map"
-            android:buttonTint="@color/blue"
+            android:buttonTint="@color/white"
             android:background="@drawable/radio_flat_selector"
             android:padding="15dp"
             android:textColor="@color/white"
-            android:button="@null">
+            android:textAlignment="center"
+            >
         </RadioButton>
-
     </RadioGroup>
 
 </RelativeLayout>
