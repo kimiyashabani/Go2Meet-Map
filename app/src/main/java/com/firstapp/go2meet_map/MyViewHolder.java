@@ -21,6 +21,6 @@ public class MyViewHolder extends RecyclerView.ViewHolder{
         // formats the title's text color depending on the "isSelected" argument.
         title.setText(item.getEventName());
         place.setText(item.getPlace());
-        Log.d("ViewHolder", "Drawing item");
+        Log.d("ViewHolder", "New item printed");
     }
 }
