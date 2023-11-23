@@ -97,6 +97,15 @@ public class DetailActivity extends AppCompatActivity {
                finish();
             }
         });
+
+        checkChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent chatIntent = new Intent(DetailActivity.this, ChatActivity.class);
+                chatIntent.putExtra("topic", intent.getStringExtra("eventName"));
+                startActivity(chatIntent);
+            }
+        });
     }
 
     @Override

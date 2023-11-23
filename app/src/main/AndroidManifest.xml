@@ -45,7 +45,7 @@
         </activity>
         <activity
             android:name=".ChatActivity"
-            android:label="Chat Activity"></activity>
+            android:label="Chat Activity"/>
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
     </application>
