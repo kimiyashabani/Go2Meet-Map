@@ -137,7 +137,7 @@ public class MapsActivity extends FragmentActivity
                 public void handleMessage(@NonNull Message msg) {
                     // message received from background thread: load complete (or failure)
                     super.handleMessage(msg);
-                    if((msg.getData().getBoolean("full"))) {
+                    if((msg.getData().getBoolean("Full"))) {
                         Log.d("DATASET", "Elements in the dataset: " + dataset.size());
                         if (!dataset.getListofitems().isEmpty()) {
                             for (int i = 0; i < dataset.getListofitems().size(); i++) {
@@ -154,13 +154,14 @@ public class MapsActivity extends FragmentActivity
                         } else {
                             showToast("I am empty");
                         }
+                    }else {
+                        showToast("Error while connecting to the server. Reconnecting...");
+
                     }
                 }
             };
             LoadingThread t= new LoadingThread(dataset, handler, new DBHelper(this));
             t.start();
-            Log.d("Maps activity", "Finished parsing the data");
-            //dataset.fillDB(new DBHelper(this));
         }
         listButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -119,7 +120,7 @@ public class LoadingThread extends Thread  {
                                 do {
                                     eventType = parser.next();
                                 } while (eventType == XmlPullParser.TEXT && parser.isWhitespace());
-                            }if(item.getLatitude()>50 && item.getLatitude()<30){
+                            }if(item.getLatitude()>50 || item.getLatitude()<30){
                                 //If the item doesn't have latitude or longitude, discard the item
                                 eventCount--;
                             }else {
@@ -132,7 +133,7 @@ public class LoadingThread extends Thread  {
             }
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("The thread failed");
         }
 
     }

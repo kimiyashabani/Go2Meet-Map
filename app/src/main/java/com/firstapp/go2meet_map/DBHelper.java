@@ -82,37 +82,41 @@ public class DBHelper extends SQLiteOpenHelper{
     }
     public int getItems(List<Item> items, List<String> types){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(
-                TABLE_NAME,
-                null,    //Get all columns
-                null,   //Where (collumns)
-                null,   // = (values)
-                null,
-                null,
-                null
-        );
-        if(cursor.getCount()<10)return -1;
-        while (cursor.moveToNext()){
-            Item item=new Item();
-            item.setStartDate(cursor.getString(1));
-            item.setEndDate(cursor.getString(2));
-            item.setWeekdays(cursor.getString(3));
-            item.setEventName(cursor.getString(4));
-            item.setFree(cursor.getString(5));
-            item.setLatitude(cursor.getString(6));
-            item.setLongitude(cursor.getString(7));
-            item.setTime(cursor.getString(8));
-            item.setUrl(cursor.getString(9));
-            item.setPlace(cursor.getString(10));
-            String tipo = cursor.getString(11);
-            item.setType(tipo);
-            if(!types.contains(tipo)){
-                types.add(tipo);
+        try {
+            Cursor cursor = db.query(
+                    TABLE_NAME,
+                    null,    //Get all columns
+                    null,   //Where (collumns)
+                    null,   // = (values)
+                    null,
+                    null,
+                    null
+            );
+            if (cursor.getCount() < 10) return -1;
+            while (cursor.moveToNext()) {
+                Item item = new Item();
+                item.setStartDate(cursor.getString(1));
+                item.setEndDate(cursor.getString(2));
+                item.setWeekdays(cursor.getString(3));
+                item.setEventName(cursor.getString(4));
+                item.setFree(cursor.getString(5));
+                item.setLatitude(cursor.getString(6));
+                item.setLongitude(cursor.getString(7));
+                item.setTime(cursor.getString(8));
+                item.setUrl(cursor.getString(9));
+                item.setPlace(cursor.getString(10));
+                String tipo = cursor.getString(11);
+                item.setType(tipo);
+                if (!types.contains(tipo)) {
+                    types.add(tipo);
+                }
+                items.add(item);
             }
-            items.add(item);
+            cursor.close();
+            return 0;
+        }catch (android.database.sqlite.SQLiteException e){
+            return -1;
         }
-        cursor.close();
-        return 0;
     }
     public void DBClose(){
         if(db!=null && db.isOpen())db.close();
