@@ -24,7 +24,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import java.util.ArrayList;
 
 public class ChatActivity extends AppCompatActivity {
-    final String serverUri = "tcp://192.168.1.74:1883";
+    final String serverUri = "tcp://192.168.142.43:1883";
     String subscriptionTopic;
     MqttAndroidClient mqttAndroidClient;
     String clientId = "ExampleAndroidClient";

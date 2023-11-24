@@ -10,15 +10,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.Locale;
 
 public class ListActivity extends AppCompatActivity implements SensorEventListener {
     private RecyclerView recyclerView;
@@ -27,6 +31,7 @@ public class ListActivity extends AppCompatActivity implements SensorEventListen
     MyAdapter recyclerViewAdapter;
     Button mapButton;
     Dataset dataset=new Dataset();
+    TextToSpeech textToSpeech;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +42,20 @@ public class ListActivity extends AppCompatActivity implements SensorEventListen
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS){
+                    int result = textToSpeech.setLanguage(Locale.CANADA);
+                    if (result == TextToSpeech.LANG_MISSING_DATA ||
+                            result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Toast.makeText(ListActivity.this, "Language not supported", Toast.LENGTH_SHORT).show();
+                    }
+                }else {
+                    Toast.makeText(ListActivity.this, "Initialization failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         recyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, recyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, int position) {
@@ -55,6 +74,13 @@ public class ListActivity extends AppCompatActivity implements SensorEventListen
                         intent.putExtra("eventTime", eventTime);
                         intent.putExtra("link_key", url);
                         startActivity(intent);
+                    }
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+                        //Test to speech
+                        Item clickedItem=dataset.getItemAtPosition(position);
+                        speak(clickedItem.getEventName()+", in, "+clickedItem.getPlace());
+
                     }
                 })
         );
@@ -106,7 +132,9 @@ public class ListActivity extends AppCompatActivity implements SensorEventListen
             }
         }
     }
-
+    private void speak(String text){
+        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+    }
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 }
