@@ -7,6 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper{
@@ -49,15 +53,16 @@ public class DBHelper extends SQLiteOpenHelper{
                 + place_COL+ " TEXT,"
                 + type_COL+ " TEXT)";
         Log.d("DATABASE: Create",query);
+        db.execSQL(query);
         // at last we are calling a exec sql
         // method to execute above sql query
-        query = "CREATE TABLE " + "DBDATE" +" ("+ "LAST_UPDATE" + " TEXT)";
+        query = "CREATE TABLE DBDATE ( LAST_UPDATE TEXT PRIMARY KEY)";
         db.execSQL(query);
+        Log.d("DATABASE","INITIALIZED DATABASE");
     }
     public void addItem(String startDate,String endDate,String weekdays,String eventName, String isFree,
                         String latitude,String longitude,String time,String url,String place, String type) {
         db = this.getWritableDatabase();
-
         // on below line we are creating a
         // variable for content values.
         ContentValues values = new ContentValues();
@@ -80,10 +85,43 @@ public class DBHelper extends SQLiteOpenHelper{
         // content values to our table.
         db.insert(TABLE_NAME,null, values);
     }
+
+    public void insertDate(){
+        db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = new Date();
+        values.put("LAST_UPDATE", formatter.format(date));
+        try{
+            db.insert("DBDATE",null,values);
+        }catch (android.database.sqlite.SQLiteConstraintException e){}
+    }
+    /*@return   0: The lists are now ready to use
+                <0: The database is not ready
+                1: The database is out of date
+     */
     public int getItems(List<Item> items, List<String> types){
         SQLiteDatabase db = this.getReadableDatabase();
         try {
             Cursor cursor = db.query(
+                    "DBDATE",
+                    null,    //Get all columns
+                    null,   //Where (collumns)
+                    null,   // = (values)
+                    null,
+                    null,
+                    null
+            );
+            if (cursor.getCount() < 1) return -1;
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            cursor.moveToNext();
+            Date date=formatter.parse(cursor.getString(0));
+            Date today=new Date();
+            today=formatter.parse(formatter.format(today));
+            if(date.before(today)){
+              return 1;
+            }
+            cursor = db.query(
                     TABLE_NAME,
                     null,    //Get all columns
                     null,   //Where (collumns)
@@ -116,7 +154,14 @@ public class DBHelper extends SQLiteOpenHelper{
             return 0;
         }catch (android.database.sqlite.SQLiteException e){
             return -1;
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
+    }
+    public void truncateDB(){
+        SQLiteDatabase db = getWritableDatabase();
+        String query= "DELETE FROM "+TABLE_NAME;
+        db.execSQL(query);
     }
     public void DBClose(){
         if(db!=null && db.isOpen())db.close();

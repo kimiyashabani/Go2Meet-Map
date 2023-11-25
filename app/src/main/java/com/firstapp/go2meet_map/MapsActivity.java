@@ -5,7 +5,6 @@ import androidx.annotation.RequiresApi;
 
 import androidx.fragment.app.FragmentActivity;
 
-
 import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -53,14 +52,9 @@ import java.util.List;
 import android.content.Intent;
 import android.view.View;
 
-
-
-
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback, SensorEventListener {
     /** DEFINING MAP **/
-    //This variable is set to true when the dataset is full of items
-    private boolean datasetReady= false;
     Dataset dataset = new Dataset();
     private GoogleMap mMap;
     private UiSettings uiSettings;
@@ -80,7 +74,6 @@ public class MapsActivity extends FragmentActivity
     private Sensor lightSensor;
     Button listButton;
     Marker marker;
-
     boolean flag = false;
 
     @RequiresApi(api = Build.VERSION_CODES.S)
@@ -156,7 +149,6 @@ public class MapsActivity extends FragmentActivity
                         }
                     }else {
                         showToast("Error while connecting to the server. Reconnecting...");
-
                     }
                 }
             };

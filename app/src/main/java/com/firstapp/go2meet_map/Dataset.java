@@ -38,7 +38,7 @@ public class Dataset {
     }
 
     public void addEventType(String type){
-        this.eventTypes.add(type);
+        if(!this.eventTypes.contains(type))this.eventTypes.add(type);
     }
 
     public Item getItemAtPosition(int position){

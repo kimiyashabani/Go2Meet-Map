@@ -30,9 +30,16 @@ public class LoadingThread extends Thread  {
     public void run(){
         Message msg = creator.obtainMessage();
         Bundle msg_data = msg.getData();
-        if (dataset.fillDB(db)<0){
+        int status=dataset.fillDB(db);
+        if (status<0){
             fillDatabase();
+            db.insertDate();
             Log.d("DATASET","DATASET FILLED FILLED FROM XML FILE");
+        }else if (status==1){
+            db.truncateDB();
+            db.insertDate();
+            fillDatabase();
+            Log.d("DATASET","UPDATED DATABASE & DATASET FROM XML FILE");
         }else Log.d("DATASET","DATASET was filled from database");
         msg_data.putBoolean("Full",true);
         msg.sendToTarget();

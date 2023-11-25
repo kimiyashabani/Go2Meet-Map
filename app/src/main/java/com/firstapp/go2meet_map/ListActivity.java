@@ -79,8 +79,7 @@ public class ListActivity extends AppCompatActivity implements SensorEventListen
                     public void onLongItemClick(View view, int position) {
                         //Test to speech
                         Item clickedItem=dataset.getItemAtPosition(position);
-                        speak(clickedItem.getEventName()+", in, "+clickedItem.getPlace());
-
+                        textToSpeech.speak(clickedItem.getEventName()+", in, "+clickedItem.getPlace(), TextToSpeech.QUEUE_FLUSH, null, null);
                     }
                 })
         );
@@ -131,9 +130,6 @@ public class ListActivity extends AppCompatActivity implements SensorEventListen
                 mapButton.setBackgroundResource(R.drawable.btn_round_corner);
             }
         }
-    }
-    private void speak(String text){
-        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
     }
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
