@@ -23,6 +23,7 @@
                 android:layout_width="380dp"
                 android:layout_height="380dp"
                 android:adjustViewBounds="true"
+
                 android:scaleType="centerCrop"
                 android:src="@drawable/madrid"></ImageView>
         </androidx.cardview.widget.CardView>
