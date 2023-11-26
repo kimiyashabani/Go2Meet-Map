@@ -12,19 +12,16 @@
         android:orientation="vertical"
         android:padding="10dp"
         tools:layout_editor_absoluteX="10dp">
-
-
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:cardCornerRadius="20dp"
             android:layout_gravity="center"
             android:elevation="10dp">
-
             <ImageView
                 android:id="@+id/madridImage"
                 android:layout_width="380dp"
-                android:layout_height="wrap_content"
+                android:layout_height="380dp"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/madrid"></ImageView>
@@ -147,7 +144,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/btn_round_corner"
-                        android:text="Enter live chat" />
+                        android:text="Enter live chat"
+                        android:textColor="@color/white"/>
                 </LinearLayout>
 
             </LinearLayout>

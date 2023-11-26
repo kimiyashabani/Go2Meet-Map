@@ -83,7 +83,6 @@ public class MapsActivity extends FragmentActivity
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         Log.d(TAG, "binding done");
-
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         if (lightSensor != null) {
@@ -120,7 +119,7 @@ public class MapsActivity extends FragmentActivity
                     LatLng myLocation = new LatLng(latitude,longitude);
                     marker = mMap.addMarker(new MarkerOptions()
                             .position(myLocation)
-                            .title("My Location")
+                            .title("You're here!")
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
                     );
                 }
@@ -160,7 +159,7 @@ public class MapsActivity extends FragmentActivity
             public void onClick(View v) {
                 Intent intent = new Intent(MapsActivity.this, ListActivity.class);
                 startActivity(intent);
-                AccMap(mMap);
+
             }
         });
     }
@@ -271,7 +270,7 @@ public class MapsActivity extends FragmentActivity
                 normalMap.setBackgroundResource(R.drawable.btn_round_corner);
                 listButton.setBackgroundResource(R.drawable.btn_round_corner);
                 //marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                if (mMap != null) {
+                if (mMap != null){
                     applyDefaultMapStyle();
                 }
             }

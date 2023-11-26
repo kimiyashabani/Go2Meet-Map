@@ -80,7 +80,7 @@ tools:context=".MapsActivity">
         <RadioButton
             android:id="@+id/normal_map"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="Normal map"
             android:buttonTint="@color/white"
             android:background="@drawable/radio_flat_selector"
@@ -93,7 +93,7 @@ tools:context=".MapsActivity">
         <RadioButton
             android:id="@+id/acc_map"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="Accessible Map"
             android:buttonTint="@color/white"
             android:background="@drawable/radio_flat_selector"

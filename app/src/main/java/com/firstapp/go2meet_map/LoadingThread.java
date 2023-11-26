@@ -140,6 +140,7 @@ public class LoadingThread extends Thread  {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("The thread failed");
         }
 
